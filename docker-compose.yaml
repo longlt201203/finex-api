@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:3306
+    volumes:
+      - finex_db_vol:/var/lib/mysql
+    networks:
+      - finex_net
+
+networks:
+  finex_net:
+    name: finex_net
+    driver: bridge
+
+volumes:
+  finex_db_vol:
