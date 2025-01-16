@@ -4,8 +4,11 @@ import { Env } from "@utils";
 import helmet from "helmet";
 import { initDbConnection } from "@db";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { initDbConnection } from "@db";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
+	await initDbConnection();
 	await initDbConnection();
 
 	const app = await NestFactory.create(AppModule);
@@ -18,6 +21,7 @@ async function bootstrap() {
 			.setTitle("API Documentation")
 			.setDescription("API Description")
 			.setVersion("1.0")
+			.addBearerAuth()
 			.build();
 		const document = SwaggerModule.createDocument(app, config);
 		SwaggerModule.setup("api/docs", app, document);
