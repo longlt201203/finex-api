@@ -1,14 +1,14 @@
 version: "3.9"
 services:
   db:
-    image: mysql:8.0
+    image: mongo
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASS}
-      MYSQL_DATABASE: ${DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
     ports:
-      - ${DB_PORT}:3306
+      - ${DB_PORT}:27017
     volumes:
-      - finex_db_vol:/var/lib/mysql
+      - finex_db_vol:/data/db
     networks:
       - finex_net
 
