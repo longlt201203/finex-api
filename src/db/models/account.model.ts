@@ -23,7 +23,7 @@ const AccountSchema = new Schema<IAccount, AccountModelType>({
 	password: { type: String, required: true },
 	fname: { type: String, required: true },
 	lname: { type: String, required: true },
-	role: { type: Number, enum: AccountRoleEnum },
+	role: { type: Number, enum: AccountRoleEnum, default: AccountRoleEnum.USER },
 	avt: { type: String, required: false },
 	createdAt: { type: Date, default: () => new Date() },
 	updatedAt: { type: Date, default: () => new Date() },
