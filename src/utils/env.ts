@@ -15,6 +15,7 @@ export const Env = {
 	APP_BASE_URL: process.env.APP_BASE_URL || "",
 	APP_DOMAIN: process.env.APP_DOMAIN || "",
 	APP_NAME: process.env.APP_NAME || "",
+	OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY || "",
 } as const;
 
 console.log(Env);
