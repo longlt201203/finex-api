@@ -4,8 +4,6 @@ import { Env } from "@utils";
 import helmet from "helmet";
 import { initDbConnection } from "@db";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { initDbConnection } from "@db";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
 	await initDbConnection();
