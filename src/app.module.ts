@@ -6,6 +6,10 @@ import { MyExceptionFilter, ValidationPipe } from "@utils";
 import { AccountModule } from "@modules/account";
 import { AuthGuard, AuthModule } from "@modules/auth";
 import { ClsModule } from "nestjs-cls";
+import { BoardModule } from "@modules/board";
+import { RecordModule } from "@modules/record";
+import { AnalysisModule } from "@modules/analysis";
+import { CategoryModule } from "@modules/category";
 
 @Module({
 	imports: [
@@ -17,6 +21,10 @@ import { ClsModule } from "nestjs-cls";
 		}),
 		AccountModule,
 		AuthModule,
+		BoardModule,
+		RecordModule,
+		CategoryModule,
+		AnalysisModule,
 	],
 	controllers: [AppController],
 	providers: [

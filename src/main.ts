@@ -4,6 +4,7 @@ import { Env } from "@utils";
 import helmet from "helmet";
 import { initDbConnection } from "@db";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import * as fs from "fs";
 
 async function bootstrap() {
 	await initDbConnection();
@@ -19,8 +20,10 @@ async function bootstrap() {
 			.setDescription("API Description")
 			.setVersion("1.0")
 			.addBearerAuth()
+			.addServer("http://localhost:3000")
 			.build();
 		const document = SwaggerModule.createDocument(app, config);
+		fs.writeFileSync("swagger.json", JSON.stringify(document, null, 2));
 		SwaggerModule.setup("api/docs", app, document);
 	}
 

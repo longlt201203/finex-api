@@ -1,4 +1,5 @@
 import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
+import { AccountDocumentType } from "./account.model";
 
 export interface IBoard {
 	title: string;
@@ -8,7 +9,7 @@ export interface IBoard {
 	updatedAt: Date;
 	isAnalyzed: boolean;
 	isDeleted: boolean;
-	accountID: typeof mongoose.Types.ObjectId;
+	account: AccountDocumentType;
 }
 
 export type BoardDocumentType = HydratedDocument<IBoard>;
@@ -23,7 +24,7 @@ const BoardSchema = new Schema<IBoard, BoardModelType>({
 	updatedAt: { type: Date, default: () => new Date() },
 	isAnalyzed: { type: Boolean, default: false },
 	isDeleted: { type: Boolean, default: false },
-	accountID: {
+	account: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,
 		ref: "Account",
