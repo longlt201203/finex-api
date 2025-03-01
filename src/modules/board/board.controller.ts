@@ -44,7 +44,7 @@ export class BoardController {
 	@SwaggerApiResponse(BoardResponse, { isArray: true })
 	async findMany(@Query() query: BoardQuery) {
 		const data = await this.boardService.findMany(query);
-		return new ApiResponseDto(data);
+		return new ApiResponseDto(BoardResponse.fromDocuments(data));
 	}
 
 	@Get(":boardId")

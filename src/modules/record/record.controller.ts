@@ -7,6 +7,7 @@ import {
 	Get,
 	Put,
 	Delete,
+	UseGuards,
 } from "@nestjs/common";
 import { RecordService } from "./record.service";
 import {
@@ -17,10 +18,12 @@ import {
 } from "./dto";
 import { ApiResponseDto, SwaggerApiResponse } from "@utils";
 import { ApiBearerAuth, ApiParam } from "@nestjs/swagger";
+import { BoardGuard } from "@modules/board";
 
 @Controller("board/:boardId/record")
 @ApiBearerAuth()
 @ApiParam({ name: "boardId" })
+@UseGuards(BoardGuard)
 export class RecordController {
 	constructor(private readonly recordService: RecordService) {}
 
@@ -45,14 +48,22 @@ export class RecordController {
 	@SwaggerApiResponse(RecordResponse, { isArray: true })
 	async findMany(@Query() query: RecordQuery) {
 		const data = await this.recordService.findMany(query);
-		return new ApiResponseDto(data);
+		return new ApiResponseDto(
+			RecordResponse.fromDocuments(data),
+			null,
+			"Success!",
+		);
 	}
 
 	@Get(":recordId")
 	@SwaggerApiResponse(RecordResponse)
 	async findOne(@Param("recordId") recordId: string) {
 		const data = await this.recordService.findOne(recordId);
-		return new ApiResponseDto(data);
+		return new ApiResponseDto(
+			RecordResponse.fromDocument(data),
+			null,
+			"Success!",
+		);
 	}
 
 	@Delete(":recordId")

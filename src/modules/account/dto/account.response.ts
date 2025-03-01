@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class AccountResponse {
 	@ApiProperty()
-	_id: string;
+	id: string;
 
 	@ApiProperty()
 	email: string;
@@ -31,7 +31,7 @@ export class AccountResponse {
 
 	static fromDocument(d: AccountDocumentType): AccountResponse {
 		return {
-			_id: d._id.toString(),
+			id: d._id.toString(),
 			email: d.email,
 			fname: d.fname,
 			lname: d.lname,
