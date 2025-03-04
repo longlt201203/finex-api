@@ -2,6 +2,7 @@ import mongoose, { HydratedDocument, Model } from "mongoose";
 import { BoardDocumentType } from "./board.model";
 import { RecordDocumentType } from "./record.model";
 import { CategoryDocumentType } from "./category.model";
+import * as dayjs from "dayjs";
 
 export interface IExtractedRecord {
 	amount: number;
@@ -10,7 +11,7 @@ export interface IExtractedRecord {
 	date: number;
 	month: number;
 	year: number;
-	createdAt: Date;
+	createdAt: string;
 	board: BoardDocumentType;
 	record: RecordDocumentType;
 	categories: CategoryDocumentType[];
@@ -36,7 +37,10 @@ const ExtractedRecordSchema = new mongoose.Schema<
 	date: { type: Number, required: true },
 	month: { type: Number, required: true },
 	year: { type: Number, required: true },
-	createdAt: { type: Date, default: () => new Date() },
+	createdAt: {
+		type: String,
+		default: () => dayjs().format("DD/MM/YYYY HH:mm:ss"),
+	},
 	board: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,
