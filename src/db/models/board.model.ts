@@ -3,6 +3,7 @@ import { AccountDocumentType } from "./account.model";
 
 export interface IBoard {
 	title: string;
+	timezone: string;
 	currencyUnit: string;
 	language: string;
 	createdAt: Date;
@@ -18,6 +19,7 @@ export type BoardModelType = Model<IBoard, {}, {}, {}, BoardDocumentType>;
 
 const BoardSchema = new Schema<IBoard, BoardModelType>({
 	title: { type: String, required: true },
+	timezone: { type: String, required: true },
 	currencyUnit: { type: String, required: true },
 	language: { type: String, required: true },
 	createdAt: { type: Date, default: () => new Date() },

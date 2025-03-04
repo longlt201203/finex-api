@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { CreateBoardRequest, UpdateBoardRequest, BoardQuery } from "./dto";
 import { BoardModel, RecordDocumentType, RecordModel } from "@db/models";
 import { ClsService } from "nestjs-cls";
-import { FinexClsStore } from "@utils";
+import { Constants, FinexClsStore } from "@utils";
 import { BoardNotFoundError } from "./errors";
 import * as dayjs from "dayjs";
 import { AnalysisService } from "@modules/analysis";
@@ -38,15 +38,19 @@ export class BoardService {
 
 	async deleteOne(id: string | number) {}
 
-	async analyze(boardId: string, changeRecord: RecordDocumentType) {
-		const board = await BoardModel.findById(boardId);
+	async analyze(changeRecord: RecordDocumentType) {
 		const createdAt = dayjs(changeRecord.createdAt);
-		const records = await RecordModel.find({
-			date: createdAt.date(),
-			month: createdAt.month(),
-			year: createdAt.year(),
-			board: board._id.toString(),
-		});
-		await this.analysisService.analyze(board, records);
+		const [board, records] = await Promise.all([
+			BoardModel.findById(changeRecord.board),
+			RecordModel.find({
+				createdAt: {
+					$gte: createdAt.startOf("date"),
+					$lte: createdAt.endOf("date"),
+				},
+				board: changeRecord.board,
+			}),
+		]);
+
+		await this.analysisService.analyze(createdAt, board, records);
 	}
 }

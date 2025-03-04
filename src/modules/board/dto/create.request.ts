@@ -4,9 +4,12 @@ export class CreateBoardRequest {
 	@ApiProperty()
 	title: string;
 
-	@ApiProperty()
+	@ApiProperty({ example: "Asia/Ho_Chi_Minh" })
+	timezone: string;
+
+	@ApiProperty({ example: "VND" })
 	currencyUnit: string;
 
-	@ApiProperty()
+	@ApiProperty({ example: "vi" })
 	language: string;
 }

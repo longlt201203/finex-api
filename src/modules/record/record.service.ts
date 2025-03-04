@@ -5,7 +5,6 @@ import { FinexClsStore } from "@utils";
 import { RecordModel } from "@db/models";
 import { RecordNotFoundError } from "./errors";
 import { BoardService } from "@modules/board";
-import * as dayjs from "dayjs";
 
 @Injectable()
 export class RecordService {
@@ -16,26 +15,22 @@ export class RecordService {
 
 	async createOne(dto: CreateRecordRequest) {
 		const boardId = this.cls.get("board.id");
-		const createdAt = dayjs(dto.createdAt);
-		const record = new RecordModel({
-			...dto,
+		let record = new RecordModel({
+			content: dto.content,
+			createdAt: dto.createdAt,
 			board: boardId,
-			date: createdAt.date(),
-			month: createdAt.month(),
-			year: createdAt.year(),
 		});
-		return await record.save();
+		record = await record.save();
+		this.boardService.analyze(record);
 	}
 
 	async updateOne(id: string, dto: UpdateRecordRequest) {
-		const createdAt = dayjs(dto.createdAt);
-		const record = await RecordModel.findByIdAndUpdate(id, {
-			...dto,
-			date: createdAt.date(),
-			month: createdAt.month(),
-			year: createdAt.year(),
+		let record = await RecordModel.findByIdAndUpdate(id, {
+			content: dto.content,
+			createdAt: dto.createdAt,
 		});
 		if (!record) throw new RecordNotFoundError();
+		this.boardService.analyze(record);
 	}
 
 	async findMany(query: RecordQuery) {
@@ -55,5 +50,6 @@ export class RecordService {
 	async deleteOne(id: string) {
 		const record = await RecordModel.findByIdAndDelete(id);
 		if (!record) throw new RecordNotFoundError();
+		this.boardService.analyze(record);
 	}
 }

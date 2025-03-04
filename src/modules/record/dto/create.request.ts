@@ -1,8 +1,6 @@
 import { Optional } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDayjsString } from "@utils";
-import { IsNotEmpty, IsString } from "class-validator";
-import * as dayjs from "dayjs";
+import { IsDate, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateRecordRequest {
 	@ApiProperty()
@@ -11,11 +9,10 @@ export class CreateRecordRequest {
 	content: string;
 
 	@ApiProperty({
-		example: dayjs().format("DD/HH/YYYY HH:mm:ss"),
-		description: "Dayjs format DD/MM/YYYY HH:mm:ss",
+		type: Date,
 		required: false,
 	})
-	@IsDayjsString("DD/MM/YYYY HH:mm:ss")
+	@IsDate()
 	@Optional()
-	createdAt?: string;
+	createdAt: Date;
 }
