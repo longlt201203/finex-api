@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { AiService } from "../ai.service";
 import {
+	ChatInput,
 	ExtractRecordInput,
 	ExtractRecordOutput,
 	ExtractRecordOutputSchema,
@@ -13,6 +14,20 @@ const openai = new OpenAI({
 });
 
 export class OpenAIService implements AiService {
+	async chat(input: ChatInput): Promise<string> {
+		const response = await openai.chat.completions.create({
+			model: "gpt-4o",
+			messages: [
+				{
+					role: "system",
+					content: `You are a Personal Financial AI Assistant designed to help users manage their personal finances effectively. Your role is to provide financial literacy, budgeting guidance, expense tracking strategies, savings plans, debt management insights, and investment education. You assist users in making informed financial decisions but do not provide personalized financial, legal, or tax advice. Response in plain text only, don't use Markdown.`,
+				},
+				{ role: "user", content: input.message },
+			],
+		});
+		return response.choices[0].message.content;
+	}
+
 	async extractRecords(
 		input: ExtractRecordInput,
 	): Promise<ExtractRecordOutput> {

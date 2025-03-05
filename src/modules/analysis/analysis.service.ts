@@ -22,6 +22,13 @@ export class AnalysisService {
 				},
 				board: boardId,
 			}),
+			ExtractedRecordModel.deleteMany({
+				createdAt: {
+					$gte: analyzeDate.startOf("date").toDate(),
+					$lte: analyzeDate.endOf("date").toDate(),
+				},
+				board: boardId,
+			}),
 		]);
 
 		let dailyAnalysis = await DailyAnalysisModel.findOne({
@@ -81,7 +88,7 @@ export class AnalysisService {
 
 	async getDailyAnalysis(query: AnalysisQuery) {
 		const boardId = this.cls.get("board.id");
-		const d = dayjs(new Date(query.year, query.month, query.date));
+		const d = dayjs(query.date, "YYYY-MM-DD");
 		const document = await DailyAnalysisModel.findOne({
 			board: boardId,
 			date: d.date(),
