@@ -24,8 +24,10 @@ export class BoardService {
 	}
 
 	async findOne(id: string) {
-		const board = await BoardModel.findById(id);
-		if (!board) throw new BoardNotFoundError();
+		const accountId = this.cls.get("account.id");
+		const board = await BoardModel.findById(id).populate("account").exec();
+		if (!board || board.account._id.toString() != accountId)
+			throw new BoardNotFoundError();
 		return board;
 	}
 

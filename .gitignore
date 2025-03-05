@@ -42,3 +42,6 @@ pnpm-lock.yaml
 src/db/migrations
 swagger.json
 documentation
+
+*.drawio.bkp
+*.drawio.dtmp

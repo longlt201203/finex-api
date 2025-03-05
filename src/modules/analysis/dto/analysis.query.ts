@@ -1,16 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsDayjsString } from "@utils";
 import { Type } from "class-transformer";
 
 export class AnalysisQuery {
-	@ApiProperty({ required: false })
-	@Type(() => Number)
-	date?: number;
-
-	@ApiProperty({ required: false })
-	@Type(() => Number)
-	month?: number;
-
-	@ApiProperty({ required: false })
-	@Type(() => Number)
-	year?: number;
+	@ApiProperty({ example: "2025-01-01" })
+	@IsDayjsString("YYYY-MM-DD")
+	date: string;
 }

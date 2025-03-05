@@ -18,6 +18,9 @@ export class BoardGuard implements CanActivate {
 		const { boardId } = req.params;
 		if (!boardId) throw new BoardNotFoundError();
 		const board = await this.boardService.findOne(boardId);
+		const accountId = this.cls.get("account.id");
+		if (board.account._id.toString() != accountId)
+			throw new BoardNotFoundError();
 		this.cls.set("board", BoardResponse.fromDocument(board));
 		return true;
 	}

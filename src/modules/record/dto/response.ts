@@ -1,3 +1,4 @@
+import { RecordDocumentType } from "@db/models";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class RecordResponse {
@@ -9,4 +10,16 @@ export class RecordResponse {
 
 	@ApiProperty({ type: Date })
 	createdAt: Date;
+
+	static fromDocument(d: RecordDocumentType): RecordResponse {
+		return {
+			id: d._id.toString(),
+			content: d.content,
+			createdAt: d.createdAt,
+		};
+	}
+
+	static fromDocuments(d: RecordDocumentType[]) {
+		return d.map(this.fromDocument);
+	}
 }

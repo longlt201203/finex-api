@@ -3,9 +3,6 @@ import { BoardDocumentType } from "./board.model";
 
 export interface IRecord {
 	content: string;
-	date: number;
-	month: number;
-	year: number;
 	createdAt: Date;
 	board: BoardDocumentType;
 }
@@ -16,10 +13,11 @@ export type RecordModelType = Model<IRecord, {}, {}, {}, RecordDocumentType>;
 
 const RecordSchema = new mongoose.Schema<IRecord, RecordModelType>({
 	content: { type: String, required: true },
-	date: { type: Number, required: true },
-	month: { type: Number, required: true },
-	year: { type: Number, required: true },
-	createdAt: { type: Date, default: () => new Date() },
+	createdAt: {
+		type: Date,
+		required: true,
+		default: () => new Date(),
+	},
 	board: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,

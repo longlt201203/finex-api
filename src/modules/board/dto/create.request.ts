@@ -4,9 +4,9 @@ export class CreateBoardRequest {
 	@ApiProperty()
 	title: string;
 
-	@ApiProperty()
+	@ApiProperty({ example: "VND" })
 	currencyUnit: string;
 
-	@ApiProperty()
+	@ApiProperty({ example: "vi" })
 	language: string;
 }
