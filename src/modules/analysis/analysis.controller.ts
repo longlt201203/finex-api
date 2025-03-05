@@ -1,7 +1,7 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, Query, UseGuards } from "@nestjs/common";
 import { AnalysisService } from "./analysis.service";
 import { ApiBearerAuth, ApiParam } from "@nestjs/swagger";
-import { SwaggerApiResponse } from "@utils";
+import { ApiResponseDto, SwaggerApiResponse } from "@utils";
 import {
 	AnalysisQuery,
 	DailyAnalysisResponse,
@@ -9,10 +9,12 @@ import {
 	MonthlyAnalysisResponse,
 	YearlyAnalysisResponse,
 } from "./dto";
+import { BoardGuard } from "@modules/board";
 
 @Controller("board/:boardId/analysis")
 @ApiBearerAuth()
 @ApiParam({ name: "boardId" })
+@UseGuards(BoardGuard)
 export class AnalysisController {
 	constructor(private readonly analysisService: AnalysisService) {}
 
@@ -22,7 +24,14 @@ export class AnalysisController {
 
 	@Get("daily")
 	@SwaggerApiResponse(DailyAnalysisResponse)
-	async getDailyAnalysis(@Query() query: AnalysisQuery) {}
+	async getDailyAnalysis(@Query() query: AnalysisQuery) {
+		const data = await this.analysisService.getDailyAnalysis(query);
+		return new ApiResponseDto(
+			DailyAnalysisResponse.fromDocument(data),
+			null,
+			"Success!",
+		);
+	}
 
 	@Get("monthly")
 	@SwaggerApiResponse(MonthlyAnalysisResponse)

@@ -1,6 +1,5 @@
 import { RecordDocumentType } from "@db/models";
 import { ApiProperty } from "@nestjs/swagger";
-import * as dayjs from "dayjs";
 
 export class RecordResponse {
 	@ApiProperty()
@@ -9,11 +8,8 @@ export class RecordResponse {
 	@ApiProperty()
 	content: string;
 
-	@ApiProperty({
-		example: dayjs().format("DD/HH/YYYY HH:mm:ss"),
-		description: "Dayjs format DD/MM/YYYY HH:mm:ss",
-	})
-	createdAt: string;
+	@ApiProperty({ type: Date })
+	createdAt: Date;
 
 	static fromDocument(d: RecordDocumentType): RecordResponse {
 		return {

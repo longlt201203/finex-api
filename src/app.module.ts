@@ -10,6 +10,7 @@ import { BoardModule } from "@modules/board";
 import { RecordModule } from "@modules/record";
 import { AnalysisModule } from "@modules/analysis";
 import { CategoryModule } from "@modules/category";
+import { ChatModule } from "@modules/chat";
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import { CategoryModule } from "@modules/category";
 		RecordModule,
 		CategoryModule,
 		AnalysisModule,
+		ChatModule,
 	],
 	controllers: [AppController],
 	providers: [
