@@ -1,3 +1,4 @@
+import { DailyAnalysisDocumentType } from "@db/models";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class DailyAnalysisResponse {
@@ -15,4 +16,14 @@ export class DailyAnalysisResponse {
 
 	@ApiProperty()
 	year: number;
+
+	static fromDocument(d: DailyAnalysisDocumentType): DailyAnalysisResponse {
+		return {
+			id: d._id.toString(),
+			date: d.date,
+			month: d.month,
+			year: d.year,
+			total: d.total,
+		};
+	}
 }

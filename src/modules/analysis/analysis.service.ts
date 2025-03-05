@@ -1,27 +1,44 @@
-import {
-	BoardDocumentType,
-	DailyAnalysisModel,
-	RecordDocumentType,
-} from "@db/models";
+import { BoardModel, DailyAnalysisModel, RecordModel } from "@db/models";
 import { ExtractedRecordModel } from "@db/models/extracted-record.model";
 import { AiServiceFactory } from "@modules/ai";
 import { Injectable } from "@nestjs/common";
 import * as dayjs from "dayjs";
+import { AnalysisQuery } from "./dto";
+import { FinexClsStore } from "@utils";
+import { ClsService } from "nestjs-cls";
+import { AnalysisNotFoundError } from "./errors";
 
 @Injectable()
 export class AnalysisService {
-	async analyze(
-		analyzeDate: dayjs.Dayjs,
-		board: BoardDocumentType,
-		records: RecordDocumentType[],
-	) {
-		const dailyAnalysis = new DailyAnalysisModel({
+	constructor(private readonly cls: ClsService<FinexClsStore>) {}
+
+	async analyze(boardId: string, analyzeDate: dayjs.Dayjs) {
+		const [board, records] = await Promise.all([
+			BoardModel.findById(boardId),
+			RecordModel.find({
+				createdAt: {
+					$gte: analyzeDate.startOf("date").toDate(),
+					$lte: analyzeDate.endOf("date").toDate(),
+				},
+				board: boardId,
+			}),
+		]);
+
+		let dailyAnalysis = await DailyAnalysisModel.findOne({
 			board: board._id,
 			date: analyzeDate.date(),
 			month: analyzeDate.month(),
 			year: analyzeDate.year(),
-			total: 0,
 		});
+		if (!dailyAnalysis) {
+			dailyAnalysis = new DailyAnalysisModel({
+				board: board._id,
+				date: analyzeDate.date(),
+				month: analyzeDate.month(),
+				year: analyzeDate.year(),
+				total: 0,
+			});
+		}
 		let extractedRecords = [];
 
 		if (records.length > 0) {
@@ -60,5 +77,18 @@ export class AnalysisService {
 			extractedRecords.length > 0 &&
 				ExtractedRecordModel.bulkSave(extractedRecords),
 		]);
+	}
+
+	async getDailyAnalysis(query: AnalysisQuery) {
+		const boardId = this.cls.get("board.id");
+		const d = dayjs(new Date(query.year, query.month, query.date));
+		const document = await DailyAnalysisModel.findOne({
+			board: boardId,
+			date: d.date(),
+			month: d.month(),
+			year: d.year(),
+		});
+		if (!document) throw new AnalysisNotFoundError();
+		return document;
 	}
 }

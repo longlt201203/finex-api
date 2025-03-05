@@ -5,6 +5,11 @@ import helmet from "helmet";
 import { initDbConnection } from "@db";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as fs from "fs";
+import * as dayjs from "dayjs";
+import * as utc from "dayjs/plugin/utc";
+import * as timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 async function bootstrap() {
 	await initDbConnection();
