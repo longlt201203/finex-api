@@ -44,7 +44,11 @@ export class CategoryController {
 	@SwaggerApiResponse(CategoryResponse, { isArray: true })
 	async findMany(@Query() query: CategoryQuery) {
 		const data = await this.categoryService.findMany(query);
-		return new ApiResponseDto(data);
+		return new ApiResponseDto(
+			CategoryResponse.fromDocuments(data),
+			null,
+			"Success!",
+		);
 	}
 
 	@Get(":categoryId")

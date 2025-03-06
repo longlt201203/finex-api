@@ -2,7 +2,6 @@ import mongoose, { HydratedDocument, Model } from "mongoose";
 import { BoardDocumentType } from "./board.model";
 import { RecordDocumentType } from "./record.model";
 import { CategoryDocumentType } from "./category.model";
-import * as dayjs from "dayjs";
 
 export interface IExtractedRecord {
 	amount: number;

@@ -9,6 +9,9 @@ export const ExtractRecordOutputSchema = z.object({
 				description:
 					"The transaction amount, representing how much the user spent or received.",
 			}),
+			categories: z.array(z.string(), {
+				description: "Category IDs that the record is suitable for",
+			}),
 		}),
 	),
 	describe: z.string({

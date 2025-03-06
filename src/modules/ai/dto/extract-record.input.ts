@@ -5,4 +5,8 @@ export interface ExtractRecordInput {
 		content: string;
 		index: number;
 	}[];
+	categories: {
+		id: string;
+		name: string;
+	}[];
 }
