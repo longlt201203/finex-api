@@ -1,7 +1,4 @@
-import {
-	ChatCompletionMessage,
-	ChatCompletionMessageParam,
-} from "openai/resources";
+import { ChatCompletionMessage } from "openai/resources";
 
 export interface ChatInput {
 	data: ChatCompletionMessage[];
