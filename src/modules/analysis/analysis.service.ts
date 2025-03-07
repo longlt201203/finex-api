@@ -1,7 +1,9 @@
 import {
+	BoardDocumentType,
 	BoardModel,
 	CategoryModel,
 	DailyAnalysisModel,
+	MonthlyAnalysisModel,
 	RecordModel,
 } from "@db/models";
 import { ExtractedRecordModel } from "@db/models/extracted-record.model";
@@ -17,31 +19,70 @@ import { AnalysisNotFoundError } from "./errors";
 export class AnalysisService {
 	constructor(private readonly cls: ClsService<FinexClsStore>) {}
 
-	async analyze(boardId: string, analyzeDate: dayjs.Dayjs) {
-		const [board, records] = await Promise.all([
-			BoardModel.findById(boardId),
+	async updateMonthlyAnalysis(
+		board: BoardDocumentType,
+		analyzeDate: dayjs.Dayjs,
+	) {
+		// let [dailyAnalysisList, monthlyAnalysis] = await Promise.all([
+		// 	DailyAnalysisModel.find({
+		// 		board: board._id,
+		// 		month: analyzeDate.get("month"),
+		// 		year: analyzeDate.get("year"),
+		// 	}),
+		// 	MonthlyAnalysisModel.findOne({
+		// 		board: board._id,
+		// 		month: analyzeDate.get("month"),
+		// 		year: analyzeDate.get("year"),
+		// 	}),
+		// ]);
+		// if (!monthlyAnalysis) {
+		// 	monthlyAnalysis = new MonthlyAnalysisModel({
+		// 		total: 0,
+		// 		avg: 0,
+		// 		median: 0,
+		// 		variant: 0,
+		// 		board: board._id,
+		// 		month: analyzeDate.get("month"),
+		// 		year: analyzeDate.get("year"),
+		// 	});
+		// }
+		// dailyAnalysisList.sort((a, b) => a.total - b.total);
+		// let total = 0;
+		// for (const item of dailyAnalysisList) {
+		// 	total += item.total;
+		// }
+		// const avg =
+		// 	dailyAnalysisList.length > 0 ? total / dailyAnalysisList.length : 0;
+		// await monthlyAnalysis.save();
+	}
+
+	async updateDailyAnalysis(
+		board: BoardDocumentType,
+		analyzeDate: dayjs.Dayjs,
+	) {
+		let [records, dailyAnalysis] = await Promise.all([
 			RecordModel.find({
 				createdAt: {
 					$gte: analyzeDate.startOf("date").toDate(),
 					$lte: analyzeDate.endOf("date").toDate(),
 				},
-				board: boardId,
+				board: board._id,
+			}),
+			DailyAnalysisModel.findOne({
+				board: board._id,
+				date: analyzeDate.date(),
+				month: analyzeDate.month(),
+				year: analyzeDate.year(),
 			}),
 			ExtractedRecordModel.deleteMany({
 				createdAt: {
 					$gte: analyzeDate.startOf("date").toDate(),
 					$lte: analyzeDate.endOf("date").toDate(),
 				},
-				board: boardId,
+				board: board._id,
 			}),
 		]);
 
-		let dailyAnalysis = await DailyAnalysisModel.findOne({
-			board: board._id,
-			date: analyzeDate.date(),
-			month: analyzeDate.month(),
-			year: analyzeDate.year(),
-		});
 		if (!dailyAnalysis) {
 			dailyAnalysis = new DailyAnalysisModel({
 				board: board._id,
@@ -78,6 +119,7 @@ export class AnalysisService {
 				return;
 			}
 
+			dailyAnalysis.total = 0;
 			extractedRecords = result.extractedRecords.map((item) => {
 				dailyAnalysis.total += item.amount;
 				const record = records[item.index];
@@ -97,6 +139,12 @@ export class AnalysisService {
 			extractedRecords.length > 0 &&
 				ExtractedRecordModel.bulkSave(extractedRecords),
 		]);
+	}
+
+	async analyze(boardId: string, analyzeDate: dayjs.Dayjs) {
+		const board = await BoardModel.findById(boardId);
+		await this.updateDailyAnalysis(board, analyzeDate);
+		await this.updateMonthlyAnalysis(board, analyzeDate);
 	}
 
 	async getDailyAnalysis(query: AnalysisQuery) {
