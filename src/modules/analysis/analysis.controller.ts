@@ -20,7 +20,14 @@ export class AnalysisController {
 
 	@Get("extracted-record")
 	@SwaggerApiResponse(ExtractedRecordResponse, { isArray: true })
-	async getExtractedRecord(@Query() query: AnalysisQuery) {}
+	async getExtractedRecord(@Query() query: AnalysisQuery) {
+		const data = await this.analysisService.getExtractedRecords(query);
+		return new ApiResponseDto(
+			ExtractedRecordResponse.fromDocuments(data),
+			null,
+			"Success!",
+		);
+	}
 
 	@Get("daily")
 	@SwaggerApiResponse(DailyAnalysisResponse)

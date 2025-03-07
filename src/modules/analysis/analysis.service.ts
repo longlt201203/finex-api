@@ -1,4 +1,9 @@
-import { BoardModel, DailyAnalysisModel, RecordModel } from "@db/models";
+import {
+	BoardModel,
+	CategoryModel,
+	DailyAnalysisModel,
+	RecordModel,
+} from "@db/models";
 import { ExtractedRecordModel } from "@db/models/extracted-record.model";
 import { AiServiceFactory } from "@modules/ai";
 import { Injectable } from "@nestjs/common";
@@ -51,12 +56,20 @@ export class AnalysisService {
 		if (records.length > 0) {
 			const aiService = AiServiceFactory.getAiService("openai");
 
+			const categories = await CategoryModel.find({
+				language: board.language,
+			});
+
 			const result = await aiService.extractRecords({
 				currencyUnit: board.currencyUnit,
 				language: board.language,
 				records: records.map((item, index) => ({
 					index: index,
 					content: item.content,
+				})),
+				categories: categories.map((item) => ({
+					id: item._id.toString(),
+					name: item.name,
 				})),
 			});
 			if (!(result.describe && result.extractedRecords)) {
@@ -73,7 +86,7 @@ export class AnalysisService {
 					record: record._id,
 					amount: item.amount,
 					content: item.content,
-					categories: [],
+					categories: item.categories,
 					createdAt: record.createdAt,
 				});
 			});
@@ -97,5 +110,19 @@ export class AnalysisService {
 		});
 		if (!document) throw new AnalysisNotFoundError();
 		return document;
+	}
+
+	async getExtractedRecords(query: AnalysisQuery) {
+		const boardId = this.cls.get("board.id");
+		const d = dayjs(query.date, "YYYY-MM-DD");
+		return await ExtractedRecordModel.find({
+			createdAt: {
+				$gte: d.startOf("date").toDate(),
+				$lte: d.endOf("date").toDate(),
+			},
+			board: boardId,
+		})
+			.populate("categories")
+			.exec();
 	}
 }
