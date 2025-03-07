@@ -42,7 +42,14 @@ export class AnalysisController {
 
 	@Get("monthly")
 	@SwaggerApiResponse(MonthlyAnalysisResponse)
-	async getMonthlyAnalysis(@Query() query: AnalysisQuery) {}
+	async getMonthlyAnalysis(@Query() query: AnalysisQuery) {
+		const data = await this.analysisService.getMonthlyAnalysis(query);
+		return new ApiResponseDto(
+			MonthlyAnalysisResponse.formDocument(data),
+			null,
+			"Success!",
+		);
+	}
 
 	@Get("yearly")
 	@SwaggerApiResponse(YearlyAnalysisResponse)

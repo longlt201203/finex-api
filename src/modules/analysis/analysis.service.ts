@@ -19,41 +19,67 @@ import { AnalysisNotFoundError } from "./errors";
 export class AnalysisService {
 	constructor(private readonly cls: ClsService<FinexClsStore>) {}
 
+	private calculateMedian(arr: number[]) {
+		const mid = Math.floor(arr.length / 2);
+
+		if (arr.length % 2 === 0) {
+			return (arr[mid - 1] + arr[mid]) / 2;
+		} else {
+			return arr[mid];
+		}
+	}
+
+	private calculateVariance(arr: number[], mean: number) {
+		const squaredDifferences = arr.map((num) => (num - mean) ** 2);
+		const variance =
+			squaredDifferences.reduce((acc, num) => acc + num, 0) / arr.length;
+		return variance;
+	}
+
 	async updateMonthlyAnalysis(
 		board: BoardDocumentType,
 		analyzeDate: dayjs.Dayjs,
 	) {
-		// let [dailyAnalysisList, monthlyAnalysis] = await Promise.all([
-		// 	DailyAnalysisModel.find({
-		// 		board: board._id,
-		// 		month: analyzeDate.get("month"),
-		// 		year: analyzeDate.get("year"),
-		// 	}),
-		// 	MonthlyAnalysisModel.findOne({
-		// 		board: board._id,
-		// 		month: analyzeDate.get("month"),
-		// 		year: analyzeDate.get("year"),
-		// 	}),
-		// ]);
-		// if (!monthlyAnalysis) {
-		// 	monthlyAnalysis = new MonthlyAnalysisModel({
-		// 		total: 0,
-		// 		avg: 0,
-		// 		median: 0,
-		// 		variant: 0,
-		// 		board: board._id,
-		// 		month: analyzeDate.get("month"),
-		// 		year: analyzeDate.get("year"),
-		// 	});
-		// }
-		// dailyAnalysisList.sort((a, b) => a.total - b.total);
-		// let total = 0;
-		// for (const item of dailyAnalysisList) {
-		// 	total += item.total;
-		// }
-		// const avg =
-		// 	dailyAnalysisList.length > 0 ? total / dailyAnalysisList.length : 0;
-		// await monthlyAnalysis.save();
+		let [dailyAnalysisList, monthlyAnalysis] = await Promise.all([
+			DailyAnalysisModel.find({
+				board: board._id,
+				month: analyzeDate.get("month"),
+				year: analyzeDate.get("year"),
+			}),
+			MonthlyAnalysisModel.findOne({
+				board: board._id,
+				month: analyzeDate.get("month"),
+				year: analyzeDate.get("year"),
+			}),
+		]);
+		if (!monthlyAnalysis) {
+			monthlyAnalysis = new MonthlyAnalysisModel({
+				total: 0,
+				avg: 0,
+				median: 0,
+				variant: 0,
+				board: board._id,
+				month: analyzeDate.get("month"),
+				year: analyzeDate.get("year"),
+			});
+		}
+		const arr = dailyAnalysisList.map((item) => item.total);
+		arr.sort((a, b) => a - b);
+		let total = 0;
+		for (const x of arr) {
+			total += x;
+		}
+		const avg =
+			dailyAnalysisList.length > 0 ? total / dailyAnalysisList.length : 0;
+		const median = this.calculateMedian(arr);
+		const variant = this.calculateVariance(arr, avg);
+
+		monthlyAnalysis.total = total;
+		monthlyAnalysis.avg = avg;
+		monthlyAnalysis.median = median;
+		monthlyAnalysis.variant = variant;
+
+		await monthlyAnalysis.save();
 	}
 
 	async updateDailyAnalysis(
@@ -172,5 +198,15 @@ export class AnalysisService {
 		})
 			.populate("categories")
 			.exec();
+	}
+
+	async getMonthlyAnalysis(query: AnalysisQuery) {
+		const boardId = this.cls.get("board.id");
+		const d = dayjs(query.date, "YYYY-MM-DD");
+		return await MonthlyAnalysisModel.findOne({
+			board: boardId,
+			month: d.month(),
+			year: d.year(),
+		});
 	}
 }
