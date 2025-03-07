@@ -4,3 +4,4 @@ export * from "./category.model";
 export * from "./record.model";
 export * from "./daily-analysis.model";
 export * from "./monthly-analysis.model";
+export * from "./chat.model";

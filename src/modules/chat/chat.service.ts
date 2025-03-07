@@ -1,14 +1,49 @@
 import { Injectable } from "@nestjs/common";
 import { CreateChatRequest, UpdateChatRequest, ChatQuery } from "./dto";
 import { AiServiceFactory } from "@modules/ai";
+import { ChatModel } from "@db/models";
+import { ClsService } from "nestjs-cls";
+import { FinexClsStore } from "@utils";
+import { ChatCompletionMessage } from "openai/resources";
 
 @Injectable()
 export class ChatService {
-	constructor() {}
+	constructor(private readonly cls: ClsService<FinexClsStore>) {}
 
 	async createOne(dto: CreateChatRequest) {
+		const accountId = this.cls.get("account.id");
+		const chatList = await ChatModel.find({
+			account: accountId,
+		});
+		chatList.push(
+			new ChatModel({
+				account: accountId,
+				role: "user",
+				message: dto.message,
+			}),
+		);
+
 		const ai = AiServiceFactory.getAiService("openai");
-		return ai.chat({ message: dto.message });
+		const content = await ai.chat({
+			data: chatList.map(
+				(item) =>
+					({
+						role: item.role,
+						content: item.message,
+					}) as ChatCompletionMessage,
+			),
+		});
+
+		chatList.push(
+			new ChatModel({
+				account: accountId,
+				role: "assistant",
+				message: content,
+			}),
+		);
+		ChatModel.bulkSave(chatList);
+
+		return content;
 	}
 
 	async updateOne(id: string | number, dto: UpdateChatRequest) {}
