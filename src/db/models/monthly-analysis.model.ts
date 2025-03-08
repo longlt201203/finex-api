@@ -9,6 +9,7 @@ export interface IMonthlyAnalysis {
 	month: number;
 	year: number;
 	board: BoardDocumentType;
+	comment?: string;
 }
 
 export type MonthlyAnalysisDocumentType = HydratedDocument<IMonthlyAnalysis>;
@@ -36,6 +37,7 @@ const MonthlyAnalysisSchema = new Schema<
 		required: true,
 		ref: "Board",
 	},
+	comment: { type: String, required: false },
 });
 
 export const MonthlyAnalysisModel = mongoose.model<
