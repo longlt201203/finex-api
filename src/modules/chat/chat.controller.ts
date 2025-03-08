@@ -9,7 +9,12 @@ import {
 	Delete,
 } from "@nestjs/common";
 import { ChatService } from "./chat.service";
-import { CreateChatRequest, UpdateChatRequest, ChatQuery } from "./dto";
+import {
+	CreateChatRequest,
+	UpdateChatRequest,
+	ChatQuery,
+	ChatResponse,
+} from "./dto";
 import { ApiResponseDto } from "@utils";
 import { ApiBearerAuth } from "@nestjs/swagger";
 
@@ -33,7 +38,7 @@ export class ChatController {
 	@Get()
 	async findMany(@Query() query: ChatQuery) {
 		const data = await this.chatService.findMany(query);
-		return new ApiResponseDto(data);
+		return new ApiResponseDto(ChatResponse.fromDocuments(data));
 	}
 
 	@Get(":id")
