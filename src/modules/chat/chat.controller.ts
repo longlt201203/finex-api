@@ -38,7 +38,7 @@ export class ChatController {
 	@Get()
 	async findMany(@Query() query: ChatQuery) {
 		const data = await this.chatService.findMany(query);
-		return new ApiResponseDto(ChatResponse.fromDocuments(data));
+		return new ApiResponseDto(ChatResponse.fromDocuments(data).reverse());
 	}
 
 	@Get(":id")
