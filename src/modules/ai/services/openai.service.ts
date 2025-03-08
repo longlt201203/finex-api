@@ -11,6 +11,7 @@ import {
 } from "../dto";
 import { Env } from "@utils";
 import { zodResponseFormat } from "openai/helpers/zod";
+import { ChatCompletionMessageParam } from "openai/resources";
 
 const openai = new OpenAI({
 	apiKey: Env.OPEN_AI_API_KEY,
@@ -18,15 +19,25 @@ const openai = new OpenAI({
 
 export class OpenAIService implements AiService {
 	async chat(input: ChatInput): Promise<string> {
+		const messages: ChatCompletionMessageParam[] = [
+			{
+				role: "system",
+				content: `You are a Personal Financial AI Assistant designed to help users manage their personal finances effectively. Your role is to provide financial literacy, budgeting guidance, expense tracking strategies, savings plans, debt management insights, and investment education. You assist users in making informed financial decisions but do not provide personalized financial, legal, or tax advice.`,
+			},
+		];
+
+		if (input.comments && input.comments.length > 0) {
+			messages.push({
+				role: "assistant",
+				content: input.comments.join("\n\n"),
+			});
+		}
+
+		messages.push(...input.data);
+
 		const response = await openai.chat.completions.create({
 			model: "gpt-4o",
-			messages: [
-				{
-					role: "system",
-					content: `You are a Personal Financial AI Assistant designed to help users manage their personal finances effectively. Your role is to provide financial literacy, budgeting guidance, expense tracking strategies, savings plans, debt management insights, and investment education. You assist users in making informed financial decisions but do not provide personalized financial, legal, or tax advice.${input.comments && input.comments.length > 0 ? ` Your last comments on the user are:\n${input.comments.join("\n")}` : ""}`,
-				},
-				...input.data,
-			],
+			messages: messages,
 		});
 		return response.choices[0].message.content;
 	}
