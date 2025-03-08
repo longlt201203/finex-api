@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CreateChatRequest, UpdateChatRequest, ChatQuery } from "./dto";
 import { AiServiceFactory } from "@modules/ai";
-import { ChatModel } from "@db/models";
+import { ChatModel, MonthlyAnalysisModel } from "@db/models";
 import { ClsService } from "nestjs-cls";
 import { FinexClsStore } from "@utils";
 import { ChatCompletionMessage } from "openai/resources";
@@ -12,6 +12,7 @@ export class ChatService {
 
 	async createOne(dto: CreateChatRequest) {
 		const accountId = this.cls.get("account.id");
+		const comment = this.cls.get("account.comment");
 		const chatList = await this.findMany({});
 		chatList.push(
 			new ChatModel({
@@ -31,6 +32,7 @@ export class ChatService {
 						content: item.message,
 					}) as ChatCompletionMessage,
 			),
+			comments: [comment],
 		});
 
 		chatList.push(

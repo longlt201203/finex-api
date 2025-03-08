@@ -1,4 +1,5 @@
 import {
+	AccountModel,
 	BoardDocumentType,
 	BoardModel,
 	CategoryModel,
@@ -40,18 +41,26 @@ export class AnalysisService {
 		board: BoardDocumentType,
 		analyzeDate: dayjs.Dayjs,
 	) {
-		let [dailyAnalysisList, monthlyAnalysis] = await Promise.all([
-			DailyAnalysisModel.find({
-				board: board._id,
-				month: analyzeDate.get("month"),
-				year: analyzeDate.get("year"),
-			}),
-			MonthlyAnalysisModel.findOne({
-				board: board._id,
-				month: analyzeDate.get("month"),
-				year: analyzeDate.get("year"),
-			}),
-		]);
+		let [dailyAnalysisList, monthlyAnalysis, extractedRecords] =
+			await Promise.all([
+				DailyAnalysisModel.find({
+					board: board._id,
+					month: analyzeDate.get("month"),
+					year: analyzeDate.get("year"),
+				}),
+				MonthlyAnalysisModel.findOne({
+					board: board._id,
+					month: analyzeDate.get("month"),
+					year: analyzeDate.get("year"),
+				}),
+				ExtractedRecordModel.find({
+					board: board._id,
+					createdAt: {
+						$gte: analyzeDate.startOf("month").toDate(),
+						$lte: analyzeDate.endOf("month").toDate(),
+					},
+				}),
+			]);
 		if (!monthlyAnalysis) {
 			monthlyAnalysis = new MonthlyAnalysisModel({
 				total: 0,
@@ -79,6 +88,28 @@ export class AnalysisService {
 		monthlyAnalysis.median = median;
 		monthlyAnalysis.variant = variant;
 
+		const ai = AiServiceFactory.getAiService("openai");
+		const output = await ai.analyzeMonth({
+			dailyAnalysis: dailyAnalysisList.map((item) => ({
+				total: item.total,
+				date: item.date,
+				month: item.month + 1,
+				year: item.year,
+			})),
+			total: monthlyAnalysis.total,
+			extractedRecords: extractedRecords.map((item) => ({
+				total: item.amount,
+				content: item.content,
+				createdAt: item.createdAt,
+				categories: item.categories.map((item1) => item1.name),
+			})),
+		});
+
+		monthlyAnalysis.comment = output.comment;
+		const accountId = this.cls.get("account.id");
+		await AccountModel.findByIdAndUpdate(accountId, {
+			comment: output.comment,
+		});
 		await monthlyAnalysis.save();
 	}
 

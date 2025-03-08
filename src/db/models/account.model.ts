@@ -11,6 +11,7 @@ export interface IAccount {
 	avt?: string;
 	createdAt: Date;
 	updatedAt: Date;
+	comment?: string;
 }
 
 export type AccountDocumentType = HydratedDocument<IAccount>;
@@ -27,6 +28,7 @@ const AccountSchema = new Schema<IAccount, AccountModelType>({
 	avt: { type: String, required: false },
 	createdAt: { type: Date, default: () => new Date() },
 	updatedAt: { type: Date, default: () => new Date() },
+	comment: { type: String, required: false },
 });
 
 export const AccountModel = mongoose.model<IAccount, AccountModelType>(
