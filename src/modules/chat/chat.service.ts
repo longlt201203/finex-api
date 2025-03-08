@@ -54,7 +54,7 @@ export class ChatService {
 			{
 				limit: 10,
 				sort: {
-					id: -1,
+					createdAt: -1,
 				},
 			},
 		);
