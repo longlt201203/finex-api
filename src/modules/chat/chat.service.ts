@@ -12,9 +12,7 @@ export class ChatService {
 
 	async createOne(dto: CreateChatRequest) {
 		const accountId = this.cls.get("account.id");
-		const chatList = await ChatModel.find({
-			account: accountId,
-		});
+		const chatList = await this.findMany({});
 		chatList.push(
 			new ChatModel({
 				account: accountId,
@@ -48,7 +46,10 @@ export class ChatService {
 
 	async updateOne(id: string | number, dto: UpdateChatRequest) {}
 
-	async findMany(query: ChatQuery) {}
+	async findMany(query: ChatQuery) {
+		const accountId = this.cls.get("account.id");
+		return await ChatModel.find({ account: accountId }, {}, { limit: 10 });
+	}
 
 	async findOne(id: string | number) {}
 
