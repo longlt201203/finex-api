@@ -1,4 +1,5 @@
 import {
+	AccountModel,
 	BoardDocumentType,
 	BoardModel,
 	CategoryModel,
@@ -105,6 +106,10 @@ export class AnalysisService {
 		});
 
 		monthlyAnalysis.comment = output.comment;
+		const accountId = this.cls.get("account.id");
+		await AccountModel.findByIdAndUpdate(accountId, {
+			comment: output.comment,
+		});
 		await monthlyAnalysis.save();
 	}
 

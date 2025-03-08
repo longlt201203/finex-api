@@ -29,6 +29,9 @@ export class AccountResponse {
 	@ApiProperty()
 	updatedAt: Date;
 
+	@ApiProperty({ required: false })
+	comment: string;
+
 	static fromDocument(d: AccountDocumentType): AccountResponse {
 		return {
 			id: d._id.toString(),
@@ -40,6 +43,7 @@ export class AccountResponse {
 			role: d.role,
 			createdAt: d.createdAt,
 			updatedAt: d.updatedAt,
+			comment: d.comment,
 		};
 	}
 
