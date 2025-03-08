@@ -22,18 +22,26 @@ export class OpenAIService implements AiService {
 		const messages: ChatCompletionMessageParam[] = [
 			{
 				role: "system",
-				content: `You are a Personal Financial AI Assistant designed to help users manage their personal finances effectively. Your role is to provide financial literacy, budgeting guidance, expense tracking strategies, savings plans, debt management insights, and investment education. You assist users in making informed financial decisions but do not provide personalized financial, legal, or tax advice.`,
+				content: `You are a Personal Financial AI Assistant designed to help users manage their personal finances effectively. Your role is to provide financial literacy, budgeting guidance, expense tracking strategies, savings plans, debt management insights, and investment education. You assist users in making informed financial decisions but do not provide personalized financial, legal, or tax advice. Answer user in Vietnamese.${input.comments && input.comments.length > 0 ? ` Your last memory of the user is:\n${input.comments.join("\n\n")}` : ""}`,
 			},
 		];
 
 		if (input.comments && input.comments.length > 0) {
-			messages.push({
-				role: "assistant",
-				content: input.comments.join("\n\n"),
-			});
+			// messages.push({
+			// 	role: "user",
+			// 	content: input.comments.join("\n\n"),
+			// });
+			// messages.push({
+			// 	role: "assistant",
+			// 	content: "OK, got it!",
+			// });
+			// messages.push({
+			// 	role: "assistant",
+			// 	content: input.comments.join("\n\n"),
+			// });
 		}
 
-		messages.push(...input.data);
+		// messages.push(...input.data);
 
 		const response = await openai.chat.completions.create({
 			model: "gpt-4o",
