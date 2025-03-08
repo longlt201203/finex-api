@@ -17,7 +17,7 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	app.setGlobalPrefix("/api");
 	app.enableCors({ origin: "*" });
-	app.use(helmet());
+	// app.use(helmet());
 
 	if (Env.ENABLE_SWAGGER) {
 		const config = new DocumentBuilder()
@@ -32,6 +32,6 @@ async function bootstrap() {
 		SwaggerModule.setup("api/docs", app, document);
 	}
 
-	await app.listen(Env.LISTEN_PORT);
+	await app.listen(Env.LISTEN_PORT, "0.0.0.0");
 }
 bootstrap();

@@ -203,10 +203,17 @@ export class AnalysisService {
 	async getMonthlyAnalysis(query: AnalysisQuery) {
 		const boardId = this.cls.get("board.id");
 		const d = dayjs(query.date, "YYYY-MM-DD");
-		return await MonthlyAnalysisModel.findOne({
+		const monthlyAnalysis = await MonthlyAnalysisModel.findOne({
 			board: boardId,
 			month: d.month(),
 			year: d.year(),
 		});
+		const dailyAnalysis = await DailyAnalysisModel.find({
+			year: d.year(),
+			month: d.month(),
+			board: boardId,
+		});
+
+		return { monthlyAnalysis, dailyAnalysis };
 	}
 }

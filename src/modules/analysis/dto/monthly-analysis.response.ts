@@ -1,5 +1,9 @@
-import { MonthlyAnalysisDocumentType } from "@db/models";
+import {
+	DailyAnalysisDocumentType,
+	MonthlyAnalysisDocumentType,
+} from "@db/models";
 import { ApiProperty } from "@nestjs/swagger";
+import * as dayjs from "dayjs";
 
 export class MonthlyAnalysisResponse {
 	@ApiProperty()
@@ -23,7 +27,22 @@ export class MonthlyAnalysisResponse {
 	@ApiProperty()
 	year: number;
 
-	static formDocument(d: MonthlyAnalysisDocumentType): MonthlyAnalysisResponse {
+	@ApiProperty()
+	chart: number[];
+
+	static formDocument(
+		d: MonthlyAnalysisDocumentType,
+		dailyAnalysis: DailyAnalysisDocumentType[],
+	): MonthlyAnalysisResponse {
+		const djs = dayjs(new Date(d.year, d.month, 1));
+		const chart = Array.from({
+			length:
+				djs.endOf("month").get("date") - djs.startOf("month").get("date") + 1,
+		}).map((_) => 0);
+		dailyAnalysis.forEach((item) => {
+			chart[item.date - 1] = item.total;
+		});
+
 		return {
 			id: d._id.toString(),
 			avg: d.avg,
@@ -32,6 +51,7 @@ export class MonthlyAnalysisResponse {
 			total: d.total,
 			variant: d.variant,
 			year: d.year,
+			chart: chart,
 		};
 	}
 }
