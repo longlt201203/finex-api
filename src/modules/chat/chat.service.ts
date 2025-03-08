@@ -48,7 +48,16 @@ export class ChatService {
 
 	async findMany(query: ChatQuery) {
 		const accountId = this.cls.get("account.id");
-		return await ChatModel.find({ account: accountId }, {}, { limit: 10 });
+		return await ChatModel.find(
+			{ account: accountId },
+			{},
+			{
+				limit: 10,
+				sort: {
+					id: -1,
+				},
+			},
+		);
 	}
 
 	async findOne(id: string | number) {}
