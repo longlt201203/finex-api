@@ -18,6 +18,7 @@ export class ChatService {
 				account: accountId,
 				role: "user",
 				message: dto.message,
+				createdAt: new Date(),
 			}),
 		);
 
@@ -37,6 +38,7 @@ export class ChatService {
 				account: accountId,
 				role: "assistant",
 				message: content,
+				createdAt: new Date(),
 			}),
 		);
 		ChatModel.bulkSave(chatList);
@@ -54,7 +56,7 @@ export class ChatService {
 			{
 				limit: 10,
 				sort: {
-					id: -1,
+					createdAt: -1,
 				},
 			},
 		);
