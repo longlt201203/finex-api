@@ -25,13 +25,15 @@ export class ChatService {
 
 		const ai = AiServiceFactory.getAiService("openai");
 		const content = await ai.chat({
-			data: chatList.map(
-				(item) =>
-					({
-						role: item.role,
-						content: item.message,
-					}) as ChatCompletionMessage,
-			),
+			data: chatList
+				.map(
+					(item) =>
+						({
+							role: item.role,
+							content: item.message,
+						}) as ChatCompletionMessage,
+				)
+				.reverse(),
 			comments: [comment],
 		});
 
@@ -58,7 +60,7 @@ export class ChatService {
 			{
 				limit: 10,
 				sort: {
-					createdAt: 1,
+					createdAt: -1,
 				},
 			},
 		);
