@@ -20,7 +20,7 @@ export class BoardService {
 	async updateOne(id: string | number, dto: UpdateBoardRequest) {}
 
 	async findMany(query: BoardQuery) {
-		return await BoardModel.find();
+		return await BoardModel.find().sort({ createdAt: -1 });
 	}
 
 	async findOne(id: string) {
