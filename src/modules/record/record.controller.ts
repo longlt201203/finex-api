@@ -18,12 +18,12 @@ import {
 } from "./dto";
 import { ApiResponseDto, SwaggerApiResponse } from "@utils";
 import { ApiBearerAuth, ApiParam } from "@nestjs/swagger";
-import { BoardGuard } from "@modules/board";
+import { BudgetGuard } from "@modules/budget";
 
-@Controller("board/:boardId/record")
+@Controller("budget/:budgetId/record")
 @ApiBearerAuth()
-@ApiParam({ name: "boardId" })
-@UseGuards(BoardGuard)
+@ApiParam({ name: "budgetId" })
+@UseGuards(BudgetGuard)
 export class RecordController {
 	constructor(private readonly recordService: RecordService) {}
 

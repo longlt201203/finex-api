@@ -1,5 +1,5 @@
 import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
-import { BoardDocumentType } from "./board.model";
+import { BudgetDocumentType } from "./budget.model";
 
 export interface IMonthlyAnalysis {
 	total: number;
@@ -8,7 +8,7 @@ export interface IMonthlyAnalysis {
 	median: number;
 	month: number;
 	year: number;
-	board: BoardDocumentType;
+	budget: BudgetDocumentType;
 	comment?: string;
 }
 
@@ -32,10 +32,10 @@ const MonthlyAnalysisSchema = new Schema<
 	median: { type: Number, required: true },
 	month: { type: Number, required: true },
 	year: { type: Number, required: true },
-	board: {
+	budget: {
 		type: Schema.Types.ObjectId,
 		required: true,
-		ref: "Board",
+		ref: "Budget",
 	},
 	comment: { type: String, required: false },
 });
