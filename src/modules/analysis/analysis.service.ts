@@ -1,7 +1,7 @@
 import {
 	AccountModel,
-	BoardDocumentType,
-	BoardModel,
+	BudgetDocumentType,
+	BudgetModel,
 	CategoryModel,
 	DailyAnalysisModel,
 	MonthlyAnalysisModel,
@@ -38,23 +38,23 @@ export class AnalysisService {
 	}
 
 	async updateMonthlyAnalysis(
-		board: BoardDocumentType,
+		budget: BudgetDocumentType,
 		analyzeDate: dayjs.Dayjs,
 	) {
 		let [dailyAnalysisList, monthlyAnalysis, extractedRecords] =
 			await Promise.all([
 				DailyAnalysisModel.find({
-					board: board._id,
+					budget: budget._id,
 					month: analyzeDate.get("month"),
 					year: analyzeDate.get("year"),
 				}),
 				MonthlyAnalysisModel.findOne({
-					board: board._id,
+					budget: budget._id,
 					month: analyzeDate.get("month"),
 					year: analyzeDate.get("year"),
 				}),
 				ExtractedRecordModel.find({
-					board: board._id,
+					budget: budget._id,
 					createdAt: {
 						$gte: analyzeDate.startOf("month").toDate(),
 						$lte: analyzeDate.endOf("month").toDate(),
@@ -67,7 +67,7 @@ export class AnalysisService {
 				avg: 0,
 				median: 0,
 				variant: 0,
-				board: board._id,
+				budget: budget._id,
 				month: analyzeDate.get("month"),
 				year: analyzeDate.get("year"),
 			});
@@ -114,7 +114,7 @@ export class AnalysisService {
 	}
 
 	async updateDailyAnalysis(
-		board: BoardDocumentType,
+		budget: BudgetDocumentType,
 		analyzeDate: dayjs.Dayjs,
 	) {
 		let [records, dailyAnalysis] = await Promise.all([
@@ -123,10 +123,10 @@ export class AnalysisService {
 					$gte: analyzeDate.startOf("date").toDate(),
 					$lte: analyzeDate.endOf("date").toDate(),
 				},
-				board: board._id,
+				budget: budget._id,
 			}),
 			DailyAnalysisModel.findOne({
-				board: board._id,
+				budget: budget._id,
 				date: analyzeDate.date(),
 				month: analyzeDate.month(),
 				year: analyzeDate.year(),
@@ -136,13 +136,13 @@ export class AnalysisService {
 					$gte: analyzeDate.startOf("date").toDate(),
 					$lte: analyzeDate.endOf("date").toDate(),
 				},
-				board: board._id,
+				budget: budget._id,
 			}),
 		]);
 
 		if (!dailyAnalysis) {
 			dailyAnalysis = new DailyAnalysisModel({
-				board: board._id,
+				budget: budget._id,
 				date: analyzeDate.date(),
 				month: analyzeDate.month(),
 				year: analyzeDate.year(),
@@ -155,12 +155,12 @@ export class AnalysisService {
 			const aiService = AiServiceFactory.getAiService("openai");
 
 			const categories = await CategoryModel.find({
-				language: board.language,
+				language: budget.language,
 			});
 
 			const result = await aiService.extractRecords({
-				currencyUnit: board.currencyUnit,
-				language: board.language,
+				currencyUnit: budget.currencyUnit,
+				language: budget.language,
 				records: records.map((item, index) => ({
 					index: index,
 					content: item.content,
@@ -181,7 +181,7 @@ export class AnalysisService {
 				dailyAnalysis.total += item.amount;
 				const record = records[item.index];
 				return new ExtractedRecordModel({
-					board: board._id,
+					budget: budget._id,
 					record: record._id,
 					amount: item.amount,
 					content: item.content,
@@ -198,17 +198,17 @@ export class AnalysisService {
 		]);
 	}
 
-	async analyze(boardId: string, analyzeDate: dayjs.Dayjs) {
-		const board = await BoardModel.findById(boardId);
-		await this.updateDailyAnalysis(board, analyzeDate);
-		await this.updateMonthlyAnalysis(board, analyzeDate);
+	async analyze(budgetId: string, analyzeDate: dayjs.Dayjs) {
+		const budget = await BudgetModel.findById(budgetId);
+		await this.updateDailyAnalysis(budget, analyzeDate);
+		await this.updateMonthlyAnalysis(budget, analyzeDate);
 	}
 
 	async getDailyAnalysis(query: AnalysisQuery) {
-		const boardId = this.cls.get("board.id");
+		const budgetId = this.cls.get("budget.id");
 		const d = dayjs(query.date, "YYYY-MM-DD");
 		const document = await DailyAnalysisModel.findOne({
-			board: boardId,
+			budget: budgetId,
 			date: d.date(),
 			month: d.month(),
 			year: d.year(),
@@ -218,31 +218,31 @@ export class AnalysisService {
 	}
 
 	async getExtractedRecords(query: AnalysisQuery) {
-		const boardId = this.cls.get("board.id");
+		const budgetId = this.cls.get("budget.id");
 		const d = dayjs(query.date, "YYYY-MM-DD");
 		return await ExtractedRecordModel.find({
 			createdAt: {
 				$gte: d.startOf("date").toDate(),
 				$lte: d.endOf("date").toDate(),
 			},
-			board: boardId,
+			budget: budgetId,
 		})
 			.populate("categories")
 			.exec();
 	}
 
 	async getMonthlyAnalysis(query: AnalysisQuery) {
-		const boardId = this.cls.get("board.id");
+		const budgetId = this.cls.get("budget.id");
 		const d = dayjs(query.date, "YYYY-MM-DD");
 		const monthlyAnalysis = await MonthlyAnalysisModel.findOne({
-			board: boardId,
+			budget: budgetId,
 			month: d.month(),
 			year: d.year(),
 		});
 		const dailyAnalysis = await DailyAnalysisModel.find({
 			year: d.year(),
 			month: d.month(),
-			board: boardId,
+			budget: budgetId,
 		});
 
 		return { monthlyAnalysis, dailyAnalysis };

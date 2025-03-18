@@ -1,49 +1,48 @@
-import mongoose, { HydratedDocument, Model } from "mongoose";
-import { BoardDocumentType } from "./board.model";
-import { RecordDocumentType } from "./record.model";
+import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
+import { BudgetDocumentType } from "./budget.model";
 import { CategoryDocumentType } from "./category.model";
 
 export interface IExtractedRecord {
 	amount: number;
 	content: string;
 	createdAt: Date;
-	board: BoardDocumentType;
-	record: RecordDocumentType;
+	budget: BudgetDocumentType;
 	categories: CategoryDocumentType[];
 }
 
+const ExtractedRecordSchema = new Schema<IExtractedRecord>(
+	{
+		amount: {
+			type: Number,
+			required: true,
+		},
+		content: {
+			type: String,
+			required: true,
+		},
+		createdAt: {
+			type: Date,
+			required: true,
+		},
+		budget: {
+			type: Schema.Types.ObjectId,
+			ref: "Budget",
+			required: true,
+		},
+		categories: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Category",
+			},
+		],
+	},
+	{
+		timestamps: true,
+	},
+);
+
 export type ExtractedRecordDocumentType = HydratedDocument<IExtractedRecord>;
-
-export type ExtractedRecordModelType = Model<
-	IExtractedRecord,
-	{},
-	{},
-	{},
-	ExtractedRecordDocumentType
->;
-
-const ExtractedRecordSchema = new mongoose.Schema<
-	IExtractedRecord,
-	ExtractedRecordModelType
->({
-	amount: { type: Number, required: true },
-	content: { type: String, required: true },
-	createdAt: {
-		type: Date,
-		default: () => new Date(),
-	},
-	board: {
-		type: mongoose.Schema.Types.ObjectId,
-		required: true,
-		ref: "Board",
-	},
-	record: {
-		type: mongoose.Schema.Types.ObjectId,
-		required: true,
-		ref: "Record",
-	},
-	categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
-});
+export type ExtractedRecordModelType = Model<IExtractedRecord>;
 
 export const ExtractedRecordModel = mongoose.model<
 	IExtractedRecord,

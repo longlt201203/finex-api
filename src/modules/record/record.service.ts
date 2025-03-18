@@ -15,31 +15,31 @@ export class RecordService {
 	) {}
 
 	async createOne(dto: CreateRecordRequest) {
-		const boardId = this.cls.get("board.id");
+		const budgetId = this.cls.get("budget.id");
 		let record = new RecordModel({
 			content: dto.content,
 			createdAt: dto.createdAt,
-			board: boardId,
+			budget: budgetId,
 		});
 		record = await record.save();
-		this.analysisService.analyze(boardId, dayjs(record.createdAt));
+		this.analysisService.analyze(budgetId, dayjs(record.createdAt));
 	}
 
 	async updateOne(id: string, dto: UpdateRecordRequest) {
-		const boardId = this.cls.get("board.id");
+		const budgetId = this.cls.get("budget.id");
 		let record = await RecordModel.findByIdAndUpdate(id, {
 			content: dto.content,
 			createdAt: dto.createdAt,
 		});
 		if (!record) throw new RecordNotFoundError();
-		this.analysisService.analyze(boardId, dayjs(record.createdAt));
+		this.analysisService.analyze(budgetId, dayjs(record.createdAt));
 	}
 
 	async findMany(query: RecordQuery) {
-		const boardId = this.cls.get("board.id");
+		const budgetId = this.cls.get("budget.id");
 		const date = dayjs(query.date, "YYYY-MM-DD");
 		const records = await RecordModel.find({
-			board: boardId,
+			budget: budgetId,
 			createdAt: {
 				$gte: date.startOf("date").toDate(),
 				$lte: date.endOf("date").toDate(),
@@ -55,9 +55,9 @@ export class RecordService {
 	}
 
 	async deleteOne(id: string) {
-		const boardId = this.cls.get("board.id");
+		const budgetId = this.cls.get("budget.id");
 		const record = await RecordModel.findByIdAndDelete(id);
 		if (!record) throw new RecordNotFoundError();
-		this.analysisService.analyze(boardId, dayjs(record.createdAt));
+		this.analysisService.analyze(budgetId, dayjs(record.createdAt));
 	}
 }

@@ -1,5 +1,5 @@
 import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
-import { BoardDocumentType } from "./board.model";
+import { BudgetDocumentType } from "./budget.model";
 
 export interface IYearlyAnalysis {
 	total: number;
@@ -7,7 +7,7 @@ export interface IYearlyAnalysis {
 	variant: number;
 	median: number;
 	year: number;
-	board: BoardDocumentType;
+	budget: BudgetDocumentType;
 }
 
 export type YearlyAnalysisDocumentType = HydratedDocument<IYearlyAnalysis>;
@@ -29,10 +29,10 @@ const YearlyAnalysisSchema = new Schema<
 	variant: { type: Number, required: true },
 	median: { type: Number, required: true },
 	year: { type: Number, required: true },
-	board: {
+	budget: {
 		type: Schema.Types.ObjectId,
 		required: true,
-		ref: "Board",
+		ref: "Budget",
 	},
 });
 

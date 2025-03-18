@@ -9,12 +9,12 @@ import {
 	MonthlyAnalysisResponse,
 	YearlyAnalysisResponse,
 } from "./dto";
-import { BoardGuard } from "@modules/board";
+import { BudgetGuard } from "@modules/budget";
 
-@Controller("board/:boardId/analysis")
+@Controller("budget/:budgetId/analysis")
 @ApiBearerAuth()
-@ApiParam({ name: "boardId" })
-@UseGuards(BoardGuard)
+@ApiParam({ name: "budgetId" })
+@UseGuards(BudgetGuard)
 export class AnalysisController {
 	constructor(private readonly analysisService: AnalysisService) {}
 
