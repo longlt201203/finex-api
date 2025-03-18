@@ -3,7 +3,7 @@ import { LoginRequest, TokenResponse } from "./dto";
 import { AuthSchemeEnum, Env, FinexClsStore } from "@utils";
 import { WrongUsernameOrPasswordError } from "./errors";
 import { AccountModel } from "@db/models";
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import { ClsService } from "nestjs-cls";
 

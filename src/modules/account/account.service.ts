@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CreateAccountRequest } from "./dto";
 import { AccountModel } from "@db/models";
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 import { ValidationError } from "class-validator";
 import { ApiValidationError } from "@errors";
 
