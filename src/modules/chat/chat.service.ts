@@ -5,6 +5,7 @@ import { ChatModel, MonthlyAnalysisModel } from "@db/models";
 import { ClsService } from "nestjs-cls";
 import { FinexClsStore } from "@utils";
 import { ChatCompletionMessage } from "openai/resources";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class ChatService {
@@ -69,4 +70,66 @@ export class ChatService {
 	async findOne(id: string | number) {}
 
 	async deleteOne(id: string | number) {}
+
+	async createChatStream(dto: CreateChatRequest): Promise<Observable<string>> {
+		const accountId = this.cls.get("account.id");
+		const comment = this.cls.get("account.comment");
+		const chatList = await this.findMany({});
+
+		// Add user message to chat list
+		const userMessage = new ChatModel({
+			account: accountId,
+			role: "user",
+			message: dto.message,
+			createdAt: new Date(),
+		});
+		chatList.push(userMessage);
+
+		// Save the user message immediately
+		await userMessage.save();
+
+		// Get AI service
+		const ai = AiServiceFactory.getAiService("openai");
+
+		// Create an observable for streaming the response
+		return new Observable<string>((subscriber) => {
+			// Prepare messages for AI
+			const messages = chatList
+				.map(
+					(item) =>
+						({
+							role: item.role,
+							content: item.message,
+						}) as ChatCompletionMessage,
+				)
+				.reverse();
+
+			let fullResponse = "";
+
+			// Stream the chat response
+			ai.chatStream({
+				data: messages,
+				comments: [comment],
+				onChunk: (chunk: string) => {
+					fullResponse += chunk;
+					subscriber.next(chunk);
+				},
+				onComplete: async () => {
+					// Save the complete assistant response
+					const assistantMessage = new ChatModel({
+						account: accountId,
+						role: "assistant",
+						message: fullResponse,
+						createdAt: new Date(),
+					});
+					await assistantMessage.save();
+
+					subscriber.complete();
+				},
+				onError: (error: Error) => {
+					subscriber.error(error);
+				},
+			});
+		});
+	}
 }

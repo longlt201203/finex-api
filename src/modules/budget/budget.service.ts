@@ -63,7 +63,37 @@ export class BudgetService {
 		return budgetSuggestion;
 	}
 
-	async updateOne(id: string | number, dto: UpdateBudgetRequest) {}
+	async updateOne(id: string, dto: UpdateBudgetRequest) {
+		const accountId = this.cls.get("account.id");
+
+		// Find the budget and verify ownership
+		const budget = await BudgetModel.findOne({
+			_id: id,
+			account: accountId,
+		});
+
+		if (!budget) throw new BudgetNotFoundError();
+
+		// Update the budget
+		Object.assign(budget, dto);
+		await budget.save();
+
+		return budget;
+	}
+
+	async deleteOne(id: string) {
+		const accountId = this.cls.get("account.id");
+
+		// Find the budget and verify ownership
+		const result = await BudgetModel.deleteOne({
+			_id: id,
+			account: accountId,
+		});
+
+		if (result.deletedCount === 0) throw new BudgetNotFoundError();
+
+		return { id };
+	}
 
 	async findMany(query: BudgetQuery) {
 		return await BudgetModel.find().sort({ createdAt: -1 });
@@ -76,6 +106,4 @@ export class BudgetService {
 			throw new BudgetNotFoundError();
 		return budget;
 	}
-
-	async deleteOne(id: string | number) {}
 }

@@ -17,7 +17,10 @@ import {
 } from "../dto";
 import { Env } from "@utils";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { ChatCompletionMessageParam } from "openai/resources";
+import {
+	ChatCompletionMessage,
+	ChatCompletionMessageParam,
+} from "openai/resources";
 import * as https from "https";
 
 // Create a custom HTTPS agent that ignores certificate errors
@@ -169,5 +172,42 @@ export class OpenAIService implements AiService {
 		return JSON.parse(
 			response.choices[0].message.content,
 		) as CreateBudgetOutput;
+	}
+
+	// Add this method to your OpenAI service implementation
+	async chatStream({
+		data,
+		comments,
+		onChunk,
+		onComplete,
+		onError,
+	}: {
+		data: ChatCompletionMessage[];
+		comments?: string[];
+		onChunk: (chunk: string) => void;
+		onComplete: () => void;
+		onError: (error: Error) => void;
+	}) {
+		try {
+			const stream = await openai.chat.completions.create({
+				model: "gpt-3.5-turbo", // or your preferred model
+				messages: data,
+				stream: true,
+			});
+
+			let content = "";
+
+			for await (const chunk of stream) {
+				const chunkContent = chunk.choices[0]?.delta?.content || "";
+				if (chunkContent) {
+					content += chunkContent;
+					onChunk(chunkContent);
+				}
+			}
+
+			onComplete();
+		} catch (error) {
+			onError(error as Error);
+		}
 	}
 }

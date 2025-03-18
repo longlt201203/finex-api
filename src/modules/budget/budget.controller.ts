@@ -43,13 +43,24 @@ export class BudgetController {
 	}
 
 	@Put(":budgetId")
-	@SwaggerApiResponse(Object)
 	async updateOne(
 		@Param("budgetId") budgetId: string,
 		@Body() dto: UpdateBudgetRequest,
 	) {
-		await this.budgetService.updateOne(budgetId, dto);
-		return new ApiResponseDto(null, null, "Updated successfully");
+		const budget = await this.budgetService.updateOne(budgetId, dto);
+		return {
+			message: "Budget updated successfully",
+			data: budget,
+		};
+	}
+
+	@Delete(":budgetId")
+	async deleteOne(@Param("budgetId") budgetId: string) {
+		const result = await this.budgetService.deleteOne(budgetId);
+		return {
+			message: "Budget deleted successfully",
+			data: result,
+		};
 	}
 
 	@Get()
@@ -64,12 +75,5 @@ export class BudgetController {
 	async findOne(@Param("budgetId") budgetId: string) {
 		const data = await this.budgetService.findOne(budgetId);
 		return new ApiResponseDto(data);
-	}
-
-	@Delete(":budgetId")
-	@SwaggerApiResponse(Object)
-	async deleteOne(@Param("budgetId") budgetId: string) {
-		await this.budgetService.deleteOne(budgetId);
-		return new ApiResponseDto(null, null, "Deleted successfully");
 	}
 }
