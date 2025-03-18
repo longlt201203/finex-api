@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import { BoardService } from "./board.service";
 import {
+	AiCreateBoardRequest,
 	CreateBoardRequest,
 	UpdateBoardRequest,
 	BoardQuery,
@@ -28,6 +29,17 @@ export class BoardController {
 	async createOne(@Body() dto: CreateBoardRequest) {
 		await this.boardService.createOne(dto);
 		return new ApiResponseDto(null, null, "Created successfully");
+	}
+
+	@Post("ai-create")
+	@SwaggerApiResponse(Object)
+	async aiCreateBoard(@Body() dto: AiCreateBoardRequest) {
+		const result = await this.boardService.aiCreateBoard(dto);
+		return new ApiResponseDto(
+			result,
+			null,
+			"Board created successfully with AI assistance",
+		);
 	}
 
 	@Put(":boardId")

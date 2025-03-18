@@ -7,6 +7,7 @@ import { AccountModule } from "@modules/account";
 import { AuthGuard, AuthModule } from "@modules/auth";
 import { ClsModule } from "nestjs-cls";
 import { BoardModule } from "@modules/board";
+import { BudgetModule } from "@modules/budget";
 import { RecordModule } from "@modules/record";
 import { AnalysisModule } from "@modules/analysis";
 import { CategoryModule } from "@modules/category";
@@ -23,6 +24,7 @@ import { ChatModule } from "@modules/chat";
 		AccountModule,
 		AuthModule,
 		BoardModule,
+		BudgetModule,
 		RecordModule,
 		CategoryModule,
 		AnalysisModule,

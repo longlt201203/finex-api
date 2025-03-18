@@ -5,16 +5,32 @@ import {
 	AnalyzeMonthOutput,
 	AnalyzeMonthOutputSchema,
 	ChatInput,
+	CreateBoardInput,
+	CreateBoardOutput,
+	CreateBoardOutputSchema,
+	CreateBudgetInput,
+	CreateBudgetOutput,
+	CreateBudgetOutputSchema,
 	ExtractRecordInput,
 	ExtractRecordOutput,
 	ExtractRecordOutputSchema,
 } from "../dto";
 import { Env } from "@utils";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { ChatCompletionMessageParam } from "openai/resources";
+import {
+	ChatCompletionMessage,
+	ChatCompletionMessageParam,
+} from "openai/resources";
+import * as https from "https";
+
+// Create a custom HTTPS agent that ignores certificate errors
+const httpsAgent = new https.Agent({
+	rejectUnauthorized: false,
+});
 
 const openai = new OpenAI({
 	apiKey: Env.OPEN_AI_API_KEY,
+	httpAgent: httpsAgent,
 });
 
 export class OpenAIService implements AiService {
@@ -100,5 +116,98 @@ export class OpenAIService implements AiService {
 		return JSON.parse(
 			response.choices[0].message.content,
 		) as AnalyzeMonthOutput;
+	}
+
+	async createBoard(input: CreateBoardInput): Promise<CreateBoardOutput> {
+		const response = await openai.chat.completions.create({
+			model: "gpt-4o-2024-08-06",
+			messages: [
+				{
+					role: "system",
+					content: `
+						You are an AI assistant specialized in helping users create financial tracking boards.
+						Your task is to suggest an appropriate board setup based on the user's description.
+						You should recommend a title, currency unit, and initial categories that would be helpful for the user's financial tracking needs.
+						Provide a clear explanation of your suggestions to help the user understand your recommendations.
+						For Vietnamese users, provide appropriate Vietnamese categories. For English users, provide English categories.
+					`,
+				},
+				{
+					role: "user",
+					content: JSON.stringify(input),
+				},
+			],
+			response_format: zodResponseFormat(
+				CreateBoardOutputSchema,
+				"create_board_output_schema",
+			),
+		});
+		return JSON.parse(response.choices[0].message.content) as CreateBoardOutput;
+	}
+
+	async createBudget(input: CreateBudgetInput): Promise<CreateBudgetOutput> {
+		const response = await openai.chat.completions.create({
+			model: "gpt-4o-2024-08-06",
+			messages: [
+				{
+					role: "system",
+					content: `
+						You are an AI assistant specialized in helping users create financial budgets.
+						Your task is to suggest an appropriate budget setup based on the user's description.
+						You should recommend a title, currency unit, and initial categories that would be helpful for the user's budgeting needs.
+						Provide a clear explanation of your suggestions to help the user understand your recommendations.
+						For Vietnamese users, provide appropriate Vietnamese categories. For English users, provide English categories.
+					`,
+				},
+				{
+					role: "user",
+					content: JSON.stringify(input),
+				},
+			],
+			response_format: zodResponseFormat(
+				CreateBudgetOutputSchema,
+				"create_budget_output_schema",
+			),
+		});
+		return JSON.parse(
+			response.choices[0].message.content,
+		) as CreateBudgetOutput;
+	}
+
+	// Add this method to your OpenAI service implementation
+	async chatStream({
+		data,
+		comments,
+		onChunk,
+		onComplete,
+		onError,
+	}: {
+		data: ChatCompletionMessage[];
+		comments?: string[];
+		onChunk: (chunk: string) => void;
+		onComplete: () => void;
+		onError: (error: Error) => void;
+	}) {
+		try {
+			const stream = await openai.chat.completions.create({
+				model: "gpt-3.5-turbo", // or your preferred model
+				messages: data,
+				stream: true,
+			});
+
+			let content = "";
+
+			for await (const chunk of stream) {
+				const chunkContent = chunk.choices[0]?.delta?.content || "";
+				if (chunkContent) {
+					content += chunkContent;
+					onChunk(chunkContent);
+				}
+			}
+
+			onComplete();
+		} catch (error) {
+			onError(error as Error);
+		}
 	}
 }
