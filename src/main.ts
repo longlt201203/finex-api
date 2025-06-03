@@ -25,6 +25,7 @@ async function bootstrap() {
 			.setDescription("API Description")
 			.setVersion("1.0")
 			.addBearerAuth()
+			.addServer("https://mcmapp.online")
 			.addServer("http://localhost:3000")
 			.build();
 		const document = SwaggerModule.createDocument(app, config);
