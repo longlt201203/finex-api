@@ -8,7 +8,6 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 	providers: [FrontService],
 	imports: [
 		ServeStaticModule.forRoot({
-			useGlobalPrefix: false,
 			rootPath: "public",
 			serveRoot: "/",
 		}),
