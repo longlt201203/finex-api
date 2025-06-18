@@ -58,5 +58,9 @@ export class AuthService {
 		return this.signTokens(account.id);
 	}
 
-	async oauth2Login(dto: LoginRequest) {}
+	async oauth2Login(dto: LoginRequest): Promise<TokenResponse> {
+		return {
+			accessToken: "",
+		};
+	}
 }
