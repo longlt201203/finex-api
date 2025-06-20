@@ -96,7 +96,10 @@ export class BudgetService {
 	}
 
 	async findMany(query: BudgetQuery) {
-		return await BudgetModel.find().sort({ createdAt: -1 });
+		const userId = this.cls.get("account.id");
+		return await BudgetModel.find({
+			account: userId,
+		}).sort({ createdAt: -1 });
 	}
 
 	async findOne(id: string) {
