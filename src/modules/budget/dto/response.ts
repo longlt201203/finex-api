@@ -26,6 +26,9 @@ export class BudgetResponse {
 	@ApiProperty()
 	isDeleted: boolean;
 
+	@ApiProperty()
+	money: number;
+
 	static fromDocument(d: BudgetDocumentType): BudgetResponse {
 		return {
 			id: d._id.toString(),
@@ -36,6 +39,7 @@ export class BudgetResponse {
 			isAnalyzed: d.isAnalyzed,
 			isDeleted: d.isDeleted,
 			updatedAt: d.updatedAt,
+			money: d.money,
 		};
 	}
 
