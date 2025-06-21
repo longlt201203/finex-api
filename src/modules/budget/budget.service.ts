@@ -18,7 +18,9 @@ export class BudgetService {
 
 	async createOne(dto: CreateBudgetRequest) {
 		const document = new BudgetModel({
-			...dto,
+			title: dto.title,
+			currencyUnit: dto.currencyUnit,
+			language: dto.language,
 			account: this.cls.get("account.id"),
 		});
 		return await document.save();
@@ -74,8 +76,9 @@ export class BudgetService {
 
 		if (!budget) throw new BudgetNotFoundError();
 
-		// Update the budget
-		Object.assign(budget, dto);
+		budget.title = dto.title;
+		budget.currencyUnit = dto.currencyUnit;
+		budget.language = dto.language;
 		await budget.save();
 
 		return budget;
