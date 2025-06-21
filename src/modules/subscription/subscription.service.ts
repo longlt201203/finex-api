@@ -22,8 +22,7 @@ export class SubscriptionService {
 	}
 
 	async findMany(query: SubscriptionQuery) {
-		const accountId = this.cls.get("account.id");
-		const filter: any = { account: accountId };
+		const filter: any = {};
 
 		if (query.active !== undefined) {
 			filter.active = query.active;
@@ -33,10 +32,8 @@ export class SubscriptionService {
 	}
 
 	async findOne(subscriptionId: string) {
-		const accountId = this.cls.get("account.id");
 		const subscription = await SubscriptionModel.findOne({
 			_id: subscriptionId,
-			account: accountId,
 		});
 
 		if (!subscription) throw new SubscriptionNotFoundError();
