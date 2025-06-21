@@ -22,6 +22,7 @@ export class BudgetService {
 			currencyUnit: dto.currencyUnit,
 			language: dto.language,
 			account: this.cls.get("account.id"),
+			money: dto.money,
 		});
 		return await document.save();
 	}
@@ -79,6 +80,7 @@ export class BudgetService {
 		budget.title = dto.title;
 		budget.currencyUnit = dto.currencyUnit;
 		budget.language = dto.language;
+		budget.money = dto.money;
 		await budget.save();
 
 		return budget;
