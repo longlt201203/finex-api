@@ -7,3 +7,5 @@ export * from "./daily-analysis.model";
 export * from "./monthly-analysis.model";
 export * from "./chat.model";
 export * from "./extracted-record.model";
+export * from "./subscription.model";
+export * from "./user-subscription.model";

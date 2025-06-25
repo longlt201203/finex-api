@@ -1,4 +1,4 @@
-import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
+import mongoose, { HydratedDocument, Model, mongo, Schema } from "mongoose";
 import { AccountDocumentType } from "./account.model";
 
 export interface IBudget {
@@ -10,6 +10,7 @@ export interface IBudget {
 	isAnalyzed: boolean;
 	isDeleted: boolean;
 	account: AccountDocumentType;
+	money: number;
 }
 
 export type BudgetDocumentType = HydratedDocument<IBudget>;
@@ -28,6 +29,10 @@ const BudgetSchema = new Schema<IBudget, BudgetModelType>({
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,
 		ref: "Account",
+	},
+	money: {
+		type: Number,
+		default: 0,
 	},
 });
 

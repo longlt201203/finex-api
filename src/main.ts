@@ -8,6 +8,7 @@ import * as fs from "fs";
 import * as dayjs from "dayjs";
 import * as utc from "dayjs/plugin/utc";
 import * as timezone from "dayjs/plugin/timezone";
+import * as cookieParser from "cookie-parser";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -18,6 +19,7 @@ async function bootstrap() {
 	app.setGlobalPrefix("/api");
 	app.enableCors({ origin: "*" });
 	// app.use(helmet());
+	app.use(cookieParser());
 
 	if (Env.ENABLE_SWAGGER) {
 		const config = new DocumentBuilder()
@@ -25,7 +27,6 @@ async function bootstrap() {
 			.setDescription("API Description")
 			.setVersion("1.0")
 			.addBearerAuth()
-			.addServer("http://localhost:3000")
 			.build();
 		const document = SwaggerModule.createDocument(app, config);
 		fs.writeFileSync("swagger.json", JSON.stringify(document, null, 2));

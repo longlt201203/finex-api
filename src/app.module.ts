@@ -12,6 +12,9 @@ import { RecordModule } from "@modules/record";
 import { AnalysisModule } from "@modules/analysis";
 import { CategoryModule } from "@modules/category";
 import { ChatModule } from "@modules/chat";
+import { SubscriptionModule } from "@modules/subscription";
+import { UserSubscriptionModule } from "@modules/user-subscription";
+import { AdminModule } from "@modules/admin";
 
 @Module({
 	imports: [
@@ -29,6 +32,9 @@ import { ChatModule } from "@modules/chat";
 		CategoryModule,
 		AnalysisModule,
 		ChatModule,
+		SubscriptionModule,
+		UserSubscriptionModule,
+		AdminModule,
 	],
 	controllers: [AppController],
 	providers: [

@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNumber, IsOptional } from "class-validator";
 
 export class CreateBudgetRequest {
 	@ApiProperty()
@@ -9,4 +10,9 @@ export class CreateBudgetRequest {
 
 	@ApiProperty({ example: "vi" })
 	language: string;
+
+	@ApiProperty({ example: 10000, required: false })
+	@IsNumber()
+	@IsOptional()
+	money?: number;
 }

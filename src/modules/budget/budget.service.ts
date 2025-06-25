@@ -18,8 +18,11 @@ export class BudgetService {
 
 	async createOne(dto: CreateBudgetRequest) {
 		const document = new BudgetModel({
-			...dto,
+			title: dto.title,
+			currencyUnit: dto.currencyUnit,
+			language: dto.language,
 			account: this.cls.get("account.id"),
+			money: dto.money,
 		});
 		return await document.save();
 	}
@@ -74,8 +77,10 @@ export class BudgetService {
 
 		if (!budget) throw new BudgetNotFoundError();
 
-		// Update the budget
-		Object.assign(budget, dto);
+		budget.title = dto.title;
+		budget.currencyUnit = dto.currencyUnit;
+		budget.language = dto.language;
+		budget.money = dto.money;
 		await budget.save();
 
 		return budget;
@@ -96,7 +101,10 @@ export class BudgetService {
 	}
 
 	async findMany(query: BudgetQuery) {
-		return await BudgetModel.find().sort({ createdAt: -1 });
+		const userId = this.cls.get("account.id");
+		return await BudgetModel.find({
+			account: userId,
+		}).sort({ createdAt: -1 });
 	}
 
 	async findOne(id: string) {

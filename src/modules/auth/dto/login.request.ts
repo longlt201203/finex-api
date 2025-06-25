@@ -1,6 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { AuthProviderEnum, AuthSchemeEnum } from "@utils";
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import {
+	IsBoolean,
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+} from "class-validator";
 
 export class LoginRequest {
 	@ApiProperty({ enum: AuthSchemeEnum })
@@ -16,4 +22,9 @@ export class LoginRequest {
 	@IsEnum(AuthProviderEnum, { message: "Invalid Auth Provider" })
 	@IsOptional()
 	provider?: AuthProviderEnum;
+
+	@ApiProperty({ type: Boolean, required: false })
+	@IsBoolean()
+	@IsOptional()
+	isCookie?: boolean;
 }

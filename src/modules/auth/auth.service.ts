@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { LoginRequest, TokenResponse } from "./dto";
 import { AuthSchemeEnum, Env, FinexClsStore } from "@utils";
-import { WrongUsernameOrPasswordError } from "./errors";
+import { InvalidTokenError, WrongUsernameOrPasswordError } from "./errors";
 import { AccountModel } from "@db/models";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
@@ -26,10 +26,15 @@ export class AuthService {
 	}
 
 	verifyAccessToken(token: string) {
-		const data = jwt.verify(token, Env.AT_SECRET, {
-			issuer: Env.APP_DOMAIN,
-		});
-		return typeof data == "string" ? null : data.sub;
+		try {
+			const data = jwt.verify(token, Env.AT_SECRET, {
+				issuer: Env.APP_DOMAIN,
+			});
+			return typeof data == "string" ? null : data.sub;
+		} catch (err) {
+			console.log(err);
+			throw new InvalidTokenError();
+		}
 	}
 
 	async login(dto: LoginRequest) {
@@ -53,5 +58,9 @@ export class AuthService {
 		return this.signTokens(account.id);
 	}
 
-	async oauth2Login(dto: LoginRequest) {}
+	async oauth2Login(dto: LoginRequest): Promise<TokenResponse> {
+		return {
+			accessToken: "",
+		};
+	}
 }
