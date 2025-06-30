@@ -15,6 +15,7 @@ import { ChatModule } from "@modules/chat";
 import { SubscriptionModule } from "@modules/subscription";
 import { UserSubscriptionModule } from "@modules/user-subscription";
 import { AdminModule } from "@modules/admin";
+import { ChartModule } from "@modules/chart";
 
 @Module({
 	imports: [
@@ -35,6 +36,7 @@ import { AdminModule } from "@modules/admin";
 		SubscriptionModule,
 		UserSubscriptionModule,
 		AdminModule,
+		ChartModule,
 	],
 	controllers: [AppController],
 	providers: [
