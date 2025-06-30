@@ -4,6 +4,7 @@ import { AccountModel } from "@db/models";
 import * as bcrypt from "bcryptjs";
 import { ValidationError } from "class-validator";
 import { ApiValidationError } from "@errors";
+import { UpdateAccountRequest } from "./dto/update-account.request";
 
 @Injectable()
 export class AccountService {
@@ -46,7 +47,25 @@ export class AccountService {
 			lname: dto.lname,
 			phone: dto.phone,
 			avt: dto.avt,
+			role: dto.role,
 		});
 		await account.save();
+	}
+
+	async getAccounts() {
+		return AccountModel.find();
+	}
+
+	async getAccountById(id: string) {
+		return AccountModel.findById(id);
+	}
+
+	async updateAccount(id: string, dto: UpdateAccountRequest) {
+		await this.validateBeforeCreate(dto);
+		return AccountModel.findByIdAndUpdate(id, dto, { new: true });
+	}
+
+	async deleteAccount(id: string) {
+		return AccountModel.findByIdAndDelete(id);
 	}
 }
