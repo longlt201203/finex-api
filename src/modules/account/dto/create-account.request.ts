@@ -44,4 +44,7 @@ export class CreateAccountRequest {
 	@IsString()
 	@IsOptional()
 	avt?: string;
+
+	@ApiProperty({ required: false })
+	role: number;
 }
