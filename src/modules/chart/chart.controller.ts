@@ -1,6 +1,13 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { ChartService } from "./chart.service";
-import { GetCacQuery, GetFreeToPremiumQuery, GetWauQuery } from "./dto";
+import {
+	GetCacQuery,
+	GetChurnRateQuery,
+	GetFreeToPremiumQuery,
+	GetMonthlyRecurringRevenueQuery,
+	GetRetentionRateQuery,
+	GetWauQuery,
+} from "./dto";
 import { ApiResponseDto } from "@utils";
 import { ApiBearerAuth } from "@nestjs/swagger";
 
@@ -28,5 +35,22 @@ export class ChartController {
 	}
 
 	@Get("retention-rate")
-	async getRetentionRate() {}
+	async getRetentionRate(@Query() query: GetRetentionRateQuery) {
+		const data = await this.chartService.getRetentionRate(query);
+		return new ApiResponseDto(data);
+	}
+
+	@Get("monthly-recurring-revenue")
+	async getMonthlyRecurringRevenue(
+		@Query() query: GetMonthlyRecurringRevenueQuery,
+	) {
+		const data = await this.chartService.getMonthlyRecurringRevenue(query);
+		return new ApiResponseDto(data);
+	}
+
+	@Get("churn-rate")
+	async getChurnRate(@Query() query: GetChurnRateQuery) {
+		const data = await this.chartService.getChurnRate(query);
+		return new ApiResponseDto(data);
+	}
 }
