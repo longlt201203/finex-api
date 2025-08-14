@@ -10,3 +10,4 @@ export * from "./extracted-record.model";
 export * from "./subscription.model";
 export * from "./user-subscription.model";
 export * from "./feedback.model";
+export * from "./ads-income.model";

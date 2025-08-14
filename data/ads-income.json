@@ -1,0 +1,37 @@
+[
+    {
+        "source": "YouTube",
+        "amount": 120.5,
+        "currency": "USD",
+        "date": "2025-08-01T10:00:00Z",
+        "status": "paid"
+    },
+    {
+        "source": "AdSense",
+        "amount": 95.75,
+        "currency": "USD",
+        "date": "2025-08-03T14:30:00Z",
+        "status": "pending"
+    },
+    {
+        "source": "TikTok",
+        "amount": 210.0,
+        "currency": "USD",
+        "date": "2025-08-05T09:15:00Z",
+        "status": "paid"
+    },
+    {
+        "source": "Meta Ads",
+        "amount": 67.2,
+        "currency": "USD",
+        "date": "2025-08-06T16:45:00Z",
+        "status": "failed"
+    },
+    {
+        "source": "Affiliate",
+        "amount": 180.99,
+        "currency": "USD",
+        "date": "2025-08-08T12:00:00Z",
+        "status": "paid"
+    }
+]
