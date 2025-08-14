@@ -16,6 +16,7 @@ import { SubscriptionModule } from "@modules/subscription";
 import { UserSubscriptionModule } from "@modules/user-subscription";
 import { AdminModule } from "@modules/admin";
 import { ChartModule } from "@modules/chart";
+import { FeedbackModule } from "@modules/feedback";
 
 @Module({
 	imports: [
@@ -37,6 +38,7 @@ import { ChartModule } from "@modules/chart";
 		UserSubscriptionModule,
 		AdminModule,
 		ChartModule,
+		FeedbackModule,
 	],
 	controllers: [AppController],
 	providers: [
